@@ -17,6 +17,18 @@ Other endpoints:
 - You can directly GET the above models (eg, `/reservation/<int:id>`)
 - User reservations: `/user/<int:id>/reservations`
 
+# Thoughts
+
+You can find the complex queries in `models.py`, and there are tests in `test_rec.py` that may clarify the usage.
+
+SQLAlchemy has an old-style query syntax (more standard ORM-style) and a new-style that (more like SQL), so you will see a mix. Queries + flask context can sometimes be touchy, so I may have overdone the `db.session.add()` calls.
+
+The table search is not as clean as I'd like. Figuring out the right `CONTAINS` query for the restrictions/endorsements was taking too long, so I made it raw Python. The other queries are closer to SQL - this allows us to leverage `PaginatedAPIMixin`, which can paginate a list response before the query is resolved.
+
+If you are wondering why I'm using Poetry on top of Python (instead of just having a `requirements` file), it's because I just hate dependency management in Python. I don't care if it's just my computer and nobody else directly runs it. Interestingly, this means I'm not using gunicorn. Gunicorn (or another webserver) would be necessary for production, so I'd have to adapt the dependency management to support both. gunicorn can be used with poetry, but requires some more setup.
+
+There's a lot of API methods. I used many of them for debugging. I find it easier to write a four-line API endpoint than jumping into the SQLite db. For production use, I'd use PostgreSQL along with a investigation tool just for Postgres.
+
 
 ## possible extensions:
 - extend "vegan" to include "vegetarian" for user or restaurant
